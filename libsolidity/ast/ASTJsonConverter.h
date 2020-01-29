@@ -119,6 +119,7 @@ public:
 	bool visit(Identifier const& _node) override;
 	bool visit(ElementaryTypeNameExpression const& _node) override;
 	bool visit(Literal const& _node) override;
+	bool visit(FormalDocumentation const& _node) override;
 
 	void endVisit(EventDefinition const&) override;
 
