@@ -67,6 +67,18 @@ void ImportDirective::accept(ASTConstVisitor& _visitor) const
 	_visitor.endVisit(*this);
 }
 
+void FormalDocumentation::accept(ASTVisitor& _visitor)
+{
+	_visitor.visit(*this);
+	_visitor.endVisit(*this);
+}
+
+void FormalDocumentation::accept(ASTConstVisitor& _visitor) const
+{
+	_visitor.visit(*this);
+	_visitor.endVisit(*this);
+}
+
 void ContractDefinition::accept(ASTVisitor& _visitor)
 {
 	if (_visitor.visit(*this))

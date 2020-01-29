@@ -135,6 +135,15 @@ void Parser::parsePragmaVersion(SourceLocation const& _location, vector<Token> c
 			);
 }
 
+ASTPointer<FormalDocumentation> Parser::parseFormalDocumentation()
+{
+	ASTNodeFactory nodeFactory{*this};
+	nodeFactory.setLocation(m_scanner->currentCommentLocation());
+	return nodeFactory.createNode<FormalDocumentation>(
+		make_shared<ASTString>(m_scanner->currentCommentLiteral())
+	);
+}
+
 ASTPointer<PragmaDirective> Parser::parsePragmaDirective()
 {
 	RecursionGuard recursionGuard(*this);
@@ -276,14 +285,14 @@ ASTPointer<ContractDefinition> Parser::parseContractDefinition()
 	RecursionGuard recursionGuard(*this);
 	ASTNodeFactory nodeFactory(*this);
 	ASTPointer<ASTString> name =  nullptr;
-	ASTPointer<ASTString> docString;
+	ASTPointer<FormalDocumentation> documentation;
 	vector<ASTPointer<InheritanceSpecifier>> baseContracts;
 	vector<ASTPointer<ASTNode>> subNodes;
 	std::pair<ContractKind, bool> contractKind{};
 	try
 	{
 		if (m_scanner->currentCommentLiteral() != "")
-			docString = make_shared<ASTString>(m_scanner->currentCommentLiteral());
+			documentation = parseFormalDocumentation();
 		contractKind = parseContractKind();
 		name = expectIdentifierToken();
 		if (m_scanner->currentToken() == Token::Is)
@@ -350,7 +359,7 @@ ASTPointer<ContractDefinition> Parser::parseContractDefinition()
 		expectToken(Token::RBrace);
 	return nodeFactory.createNode<ContractDefinition>(
 		name,
-		docString,
+		documentation,
 		baseContracts,
 		subNodes,
 		contractKind.first,
@@ -538,9 +547,9 @@ ASTPointer<ASTNode> Parser::parseFunctionDefinition()
 {
 	RecursionGuard recursionGuard(*this);
 	ASTNodeFactory nodeFactory(*this);
-	ASTPointer<ASTString> docstring;
+	ASTPointer<FormalDocumentation> documentation;
 	if (m_scanner->currentCommentLiteral() != "")
-		docstring = make_shared<ASTString>(m_scanner->currentCommentLiteral());
+		documentation = parseFormalDocumentation();
 
 	Token kind = m_scanner->currentToken();
 	ASTPointer<ASTString> name;
@@ -598,7 +607,7 @@ ASTPointer<ASTNode> Parser::parseFunctionDefinition()
 		kind,
 		header.isVirtual,
 		header.overrides,
-		docstring,
+		documentation,
 		header.parameters,
 		header.modifiers,
 		header.returnParameters,
@@ -792,9 +801,9 @@ ASTPointer<ModifierDefinition> Parser::parseModifierDefinition()
 	m_insideModifier = true;
 
 	ASTNodeFactory nodeFactory(*this);
-	ASTPointer<ASTString> docstring;
+	ASTPointer<FormalDocumentation> documentation;
 	if (m_scanner->currentCommentLiteral() != "")
-		docstring = make_shared<ASTString>(m_scanner->currentCommentLiteral());
+		documentation = parseFormalDocumentation();
 
 	expectToken(Token::Modifier);
 	ASTPointer<ASTString> name(expectIdentifierToken());
@@ -835,16 +844,16 @@ ASTPointer<ModifierDefinition> Parser::parseModifierDefinition()
 
 	ASTPointer<Block> block = parseBlock();
 	nodeFactory.setEndPositionFromNode(block);
-	return nodeFactory.createNode<ModifierDefinition>(name, docstring, parameters, isVirtual, overrides, block);
+	return nodeFactory.createNode<ModifierDefinition>(name, documentation, parameters, isVirtual, overrides, block);
 }
 
 ASTPointer<EventDefinition> Parser::parseEventDefinition()
 {
 	RecursionGuard recursionGuard(*this);
 	ASTNodeFactory nodeFactory(*this);
-	ASTPointer<ASTString> docstring;
+	ASTPointer<FormalDocumentation> documentation;
 	if (m_scanner->currentCommentLiteral() != "")
-		docstring = make_shared<ASTString>(m_scanner->currentCommentLiteral());
+		documentation = parseFormalDocumentation();
 
 	expectToken(Token::Event);
 	ASTPointer<ASTString> name(expectIdentifierToken());
@@ -861,7 +870,7 @@ ASTPointer<EventDefinition> Parser::parseEventDefinition()
 	}
 	nodeFactory.markEndPosition();
 	expectToken(Token::Semicolon);
-	return nodeFactory.createNode<EventDefinition>(name, docstring, parameters, anonymous);
+	return nodeFactory.createNode<EventDefinition>(name, documentation, parameters, anonymous);
 }
 
 ASTPointer<UsingForDirective> Parser::parseUsingDirective()
@@ -1355,7 +1364,7 @@ ASTPointer<EmitStatement> Parser::parseEmitStatement(ASTPointer<ASTString> const
 		if (m_scanner->currentToken() != Token::Period)
 			break;
 		m_scanner->next();
-	};
+	}
 
 	auto eventName = expressionFromIndexAccessStructure(iap);
 	expectToken(Token::LParen);

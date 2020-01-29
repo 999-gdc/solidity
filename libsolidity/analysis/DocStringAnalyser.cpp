@@ -73,7 +73,7 @@ bool DocStringAnalyser::visit(EventDefinition const& _event)
 
 void DocStringAnalyser::checkParameters(
 	CallableDeclaration const& _callable,
-	DocumentedAnnotation& _annotation
+	FormallyDocumentedAnnotation& _annotation
 )
 {
 	set<string> validParams;
@@ -95,8 +95,8 @@ void DocStringAnalyser::checkParameters(
 
 void DocStringAnalyser::handleConstructor(
 	CallableDeclaration const& _callable,
-	Documented const& _node,
-	DocumentedAnnotation& _annotation
+	FormallyDocumented const& _node,
+	FormallyDocumentedAnnotation& _annotation
 )
 {
 	static set<string> const validTags = set<string>{"author", "dev", "notice", "param"};
@@ -106,8 +106,8 @@ void DocStringAnalyser::handleConstructor(
 
 void DocStringAnalyser::handleCallable(
 	CallableDeclaration const& _callable,
-	Documented const& _node,
-	DocumentedAnnotation& _annotation
+	FormallyDocumented const& _node,
+	FormallyDocumentedAnnotation& _annotation
 )
 {
 	static set<string> const validTags = set<string>{"author", "dev", "notice", "return", "param"};
@@ -116,16 +116,16 @@ void DocStringAnalyser::handleCallable(
 }
 
 void DocStringAnalyser::parseDocStrings(
-	Documented const& _node,
-	DocumentedAnnotation& _annotation,
+	FormallyDocumented const& _node,
+	FormallyDocumentedAnnotation& _annotation,
 	set<string> const& _validTags,
 	string const& _nodeName
 )
 {
 	DocStringParser parser;
-	if (_node.documentation() && !_node.documentation()->empty())
+	if (_node.documentation() && !_node.documentation()->text()->empty())
 	{
-		if (!parser.parse(*_node.documentation(), m_errorReporter))
+		if (!parser.parse(*_node.documentation()->text(), m_errorReporter))
 			m_errorOccured = true;
 		_annotation.docTags = parser.tags();
 	}

@@ -93,6 +93,7 @@ class PrimaryExpression;
 class Identifier;
 class ElementaryTypeNameExpression;
 class Literal;
+class FormalDocumentation;
 
 class VariableScope;
 

@@ -429,6 +429,7 @@ Token Scanner::scanSlash()
 			Token comment;
 			m_skippedComments[NextNext].location.start = firstSlashPosition;
 			comment = scanSingleLineDocComment();
+			m_skippedComments[NextNext].location.source = m_source;
 			m_skippedComments[NextNext].location.end = sourcePos();
 			m_skippedComments[NextNext].token = comment;
 			return Token::Whitespace;
@@ -455,6 +456,7 @@ Token Scanner::scanSlash()
 			Token comment;
 			m_skippedComments[NextNext].location.start = firstSlashPosition;
 			comment = scanMultiLineDocComment();
+			m_skippedComments[NextNext].location.source = m_source;
 			m_skippedComments[NextNext].location.end = sourcePos();
 			m_skippedComments[NextNext].token = comment;
 			if (comment == Token::Illegal)

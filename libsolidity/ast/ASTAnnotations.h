@@ -56,9 +56,9 @@ struct DocTag
 	std::string paramName;	///< Only used for @param, stores the parameter name.
 };
 
-struct DocumentedAnnotation
+struct FormallyDocumentedAnnotation
 {
-	virtual ~DocumentedAnnotation() = default;
+	virtual ~FormallyDocumentedAnnotation() = default;
 	/// Mapping docstring tag name -> content.
 	std::multimap<std::string, DocTag> docTags;
 };
@@ -101,7 +101,7 @@ struct TypeDeclarationAnnotation: DeclarationAnnotation
 	std::string canonicalName;
 };
 
-struct ContractDefinitionAnnotation: TypeDeclarationAnnotation, DocumentedAnnotation
+struct ContractDefinitionAnnotation: TypeDeclarationAnnotation, FormallyDocumentedAnnotation
 {
 	/// List of functions without a body. Can also contain functions from base classes.
 	std::vector<FunctionDefinition const*> unimplementedFunctions;
@@ -122,15 +122,15 @@ struct CallableDeclarationAnnotation: DeclarationAnnotation
 	std::set<CallableDeclaration const*> baseFunctions;
 };
 
-struct FunctionDefinitionAnnotation: CallableDeclarationAnnotation, DocumentedAnnotation
+struct FunctionDefinitionAnnotation: CallableDeclarationAnnotation, FormallyDocumentedAnnotation
 {
 };
 
-struct EventDefinitionAnnotation: CallableDeclarationAnnotation, DocumentedAnnotation
+struct EventDefinitionAnnotation: CallableDeclarationAnnotation, FormallyDocumentedAnnotation
 {
 };
 
-struct ModifierDefinitionAnnotation: CallableDeclarationAnnotation, DocumentedAnnotation
+struct ModifierDefinitionAnnotation: CallableDeclarationAnnotation, FormallyDocumentedAnnotation
 {
 };
 
@@ -142,7 +142,7 @@ struct VariableDeclarationAnnotation: DeclarationAnnotation
 	std::set<CallableDeclaration const*> baseFunctions;
 };
 
-struct StatementAnnotation: ASTAnnotation, DocumentedAnnotation
+struct StatementAnnotation: ASTAnnotation
 {
 };
 
