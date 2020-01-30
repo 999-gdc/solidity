@@ -833,15 +833,19 @@ the ``dup`` and ``swap`` instructions as well as ``jump`` instructions, labels a
 | insize, out, outsize)   |     |   | providing g gas and v wei and output area                       |
 |                         |     |   | mem[out...(out+outsize)) returning 0 on error (eg. out of gas)  |
 |                         |     |   | and 1 on success                                                |
+|                         |     |   | :ref:`See more <yul-call-return-area>`                          |
 +-------------------------+-----+---+-----------------------------------------------------------------+
 | callcode(g, a, v, in,   |     | F | identical to ``call`` but only use the code from a and stay     |
 | insize, out, outsize)   |     |   | in the context of the current contract otherwise                |
+|                         |     |   | :ref:`See more <yul-call-return-area>`                          |
 +-------------------------+-----+---+-----------------------------------------------------------------+
 | delegatecall(g, a, in,  |     | H | identical to ``callcode`` but also keep ``caller``              |
 | insize, out, outsize)   |     |   | and ``callvalue``                                               |
+|                         |     |   | :ref:`See more <yul-call-return-area>`                          |
 +-------------------------+-----+---+-----------------------------------------------------------------+
 | staticcall(g, a, in,    |     | B | identical to ``call(g, a, 0, in, insize, out, outsize)`` but do |
 | insize, out, outsize)   |     |   | not allow state modifications                                   |
+|                         |     |   | :ref:`See more <yul-call-return-area>`                          |
 +-------------------------+-----+---+-----------------------------------------------------------------+
 | return(p, s)            | `-` | F | end execution, return data mem[p...(p+s))                       |
 +-------------------------+-----+---+-----------------------------------------------------------------+
@@ -880,6 +884,8 @@ the ``dup`` and ``swap`` instructions as well as ``jump`` instructions, labels a
 +-------------------------+-----+---+-----------------------------------------------------------------+
 | gaslimit()              |     | F | block gas limit of the current block                            |
 +-------------------------+-----+---+-----------------------------------------------------------------+
+
+.. _yul-call-return-area:
 
 The ``call*`` functions require defining an output area in memory equal to the
 ``out`` plus ``outsize`` function parameters. This is not the same as the data
