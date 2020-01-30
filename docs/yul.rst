@@ -887,11 +887,13 @@ the ``dup`` and ``swap`` instructions as well as ``jump`` instructions, labels a
 
 .. _yul-call-return-area:
 
-The ``call*`` functions require defining an output area in memory equal to the
-``out`` plus ``outsize`` function parameters. This is not the same as the data
-returned by calling the contract, but rather the space in memory reserved for the data returned.
-The functions never touch any memory outside of this area, and return a ``0``
-("out of gas") if the area reserved is not large enough for the return data.
+The ``call*`` instructions use the ``out`` and ``outsize`` parameters to define an area in memory where
+the return data is placed. This area is written to depending on how many bytes the called contract returns.
+If it returns more data, only the first ``outsize`` bytes are written. You can access the rest of the data
+using the ``returndatacopy`` opcode. If it returns less data, then the remaining bytes are not touched at all.
+You need to use the ``returndatasize`` opcode to check which part of this memory area contains the return data.
+The remaining bytes will retain their values as of before the call. If the call fails (it returns ``0``),
+nothing is written to that area, but you can still retrieve the failure data using ``returndatacopy``.
 
 There are three additional functions, ``datasize(x)``, ``dataoffset(x)`` and ``datacopy(t, f, l)``,
 which are used to access other parts of a Yul object.
